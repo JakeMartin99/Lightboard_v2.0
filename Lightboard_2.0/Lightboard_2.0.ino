@@ -11,6 +11,11 @@
 #include "SparkFun_VEML6030_Ambient_Light_Sensor.h"
 FASTLED_USING_NAMESPACE
 
+// Include external project files
+#include "Utils.h"
+#include "Shapes.h"
+struct Buffalo buff = {};
+
 #if defined(FASTLED_VERSION) && (FASTLED_VERSION < 3001000)
 #warning "Requires FastLED 3.1 or later; check github for latest code."
 #endif
@@ -459,16 +464,9 @@ void buff2()
   int col = col_start;
   for(int i=0; i<70; i++)
   {
-    int x = buff_outer[i][0] - 1;
-    int y = 19 - (buff_outer[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CHSV( (col + (i*256/70)) % 256, 255, 255);
+    leds[pt_finder(buff.outer[i][0], buff.outer[i][1], 1)] = CHSV( (col + (i*256/70)) % 256, 255, 255);
   }
+  
   //Buff C
   for(int i=0; i<34; i++)
   {
