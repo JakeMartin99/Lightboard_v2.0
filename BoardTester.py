@@ -95,9 +95,9 @@ for i in range(len(tickers)):
             c = "%0.2f" % c
             pc = "%0.2f" % pc
             print("$" + str(tickers[i][j]) + ": " + str(pc) + "==>" + str(c))
-            time.sleep(0.65)
+            time.sleep(0.6)
             print("-" * 50)
-            time.sleep(0.65)
+            time.sleep(0.5)
             strs[i] += str(tickers[i][j]) + " " + str(c) + "  "
         except:
             pass
@@ -196,14 +196,15 @@ while not done:
         ring_rad, offs = 0, 0
         count = stock_scr(colors, strs, count)
         FPS = 5
-        '''if count % 25 == 24:
+        if count % 25 == 24:
             try:
+                print("Retrieving...")
                 begin = strs[refresh_outer].index(tickers[refresh_outer][refresh_inner])-1
-                end = strs[refresh_outer][begin:].index("  ")
+                end = strs[refresh_outer][begin:].index("  ")+1
                 c, pc = get_data(tickers[refresh_outer][refresh_inner])
                 round(c, 2)
                 round(pc, 2)
-                modif = ''
+                modif = ""
                 if c < pc:
                     modif = "<"
                 elif c > pc:
@@ -212,16 +213,19 @@ while not done:
                     modif = "-"
                 c = "%0.2f" % c
                 pc = "%0.2f" % pc
+                print(strs[refresh_outer])
                 print("$" + str(tickers[refresh_outer][refresh_inner]) + ": " + str(pc) + "==>" + str(c))
-                print("-" * 50)
                 strs[refresh_outer] = (strs[refresh_outer][0:begin] + modif +
-                        str(tickers[refresh_outer][refresh_inner]) + " " + str(c))
+                        str(tickers[refresh_outer][refresh_inner]) + " " + str(c) + " " +
+                        strs[refresh_outer][begin:][end:])
+                print(strs[refresh_outer])
+                print("-" * 50)
                 refresh_inner += 1
                 if refresh_inner >= len(tickers[refresh_outer]):
                     refresh_inner = 0
                     refresh_outer = (refresh_outer + 1) % 3
             except:
-                pass'''
+                pass
 
     elif colorMode == 6:
         FPS = 120
