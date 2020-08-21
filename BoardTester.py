@@ -11,6 +11,7 @@ from point2d import Point2D
 import colorsys
 from Stocks import get_data
 from Characters import char_pts
+import time
 
 # Function to create a randomized color tuple
 def rand_color()->(int,int,int):
@@ -67,29 +68,61 @@ def wow3(colors, off):
     return off+1
 
 # The stock scroller animation
-data = get_data("AAPL")
+tickers = [
+            ("SPY", "QQQ", "TLT", "GLD", "SLV", "UUP", "USO"),
+            ("AAPL", "AMZN", "MSFT", "GOOG", "FB", "TSLA", "NVDA", "NFLX", "AMD"),
+            ("BRK.A", "V", "MA", "PYPL", "JPM", "BAC", "C", "GS", "MS")
+            ]
+refresh_outer = 0
+refresh_inner = 0
+strs = []
+print("~" * 100)
+print("Getting stock data...")
+print("-" * 50)
+for i in range(len(tickers)):
+    strs.append("")
+    for j in range(len(tickers[i])):
+        try:
+            c, pc = get_data(tickers[i][j])
+            round(c, 2)
+            round(pc, 2)
+            if c < pc:
+                strs[i] += "<"
+            elif c > pc:
+                strs[i] += ">"
+            else:
+                strs[i] += "-"
+            c = "%0.2f" % c
+            pc = "%0.2f" % pc
+            print("$" + str(tickers[i][j]) + ": " + str(pc) + "==>" + str(c))
+            time.sleep(0.65)
+            print("-" * 50)
+            time.sleep(0.65)
+            strs[i] += str(tickers[i][j]) + " " + str(c) + "  "
+        except:
+            pass
+    time.sleep(1 + 0.5*i)
+
 count = 0
-def stock_scr(colors, data, count):
+def stock_scr(colors, strs, count):
     colors[0 + 0*25 : 24 + 0*25] = [WHITE]*25
     colors[0 + 6*25 : 24 + 6*25] = [WHITE]*25
     colors[0 + 12*25 : 24 + 12*25] = [WHITE]*25
-    colors[0 + 18*25 : 24 + 18*25] = [WHITE]*25
-
-    curr, prev_close = data
-    if curr < prev_close:
-        color = RED
-    else:
-        color = GREEN
-    strs = ["ABC DEF GHI JKL MNO PQR STU ",
-            "?? ?? ?? ?? ",
-            "VWX YZ0 123 456 789 <>? "]
-    for j in range(len(strs)):
-        str = strs[j]
+    colors[0 + 18*25 : 24 + 19*25] = [WHITE]*50
+    color = LGRAY
+    for i in range(len(strs)):
+        str = strs[i]
         L = len(str)
         size = max(25, L*4)
-        chrs = [char_pts(str[i], (count + i*4)%(size), 1 + 6*j) for i in range(L)]
+        chrs = [char_pts(str[x], (count + x*4)%(size), 1 + 6*i) for x in range(L)]
         for chr in chrs:
-            for pixl in chr:
+            if chr[0] == '>':
+                color = GREEN
+            elif chr[0] == '<':
+                color = RED
+            elif chr[0] == '-':
+                color = LGRAY
+            for pixl in chr[1:]:
                 try:
                     if pixl[0] >= size:
                         pixl = (pixl[0] - size, pixl[1])
@@ -97,7 +130,7 @@ def stock_scr(colors, data, count):
                         colors[pixl[0] + 25*pixl[1]] = color
                 except:
                     pass
-    return (count+1)
+    return (count-1)
 
 # Initialize the game engine
 pygame.init()
@@ -105,6 +138,7 @@ pygame.init()
 # Define some colors
 BLACK = (0, 0, 0)
 GRAY = (20, 20, 20)
+LGRAY = (125, 125, 125)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -160,8 +194,35 @@ while not done:
         ring_rad, offs = spiral(colors, ring_rad, offs)
     elif colorMode == 5:
         ring_rad, offs = 0, 0
-        count = stock_scr(colors, data, count)
+        count = stock_scr(colors, strs, count)
         FPS = 5
+        if count % 50 == 49:
+            try:
+                begin = strs[refresh_outer].index(tickers[refresh_outer][refresh_inner])-1
+                end = strs[refresh_outer][begin:].index("  ")
+                c, pc = get_data(tickers[refresh_outer][refresh_inner])
+                round(c, 2)
+                round(pc, 2)
+                modif = ''
+                if c < pc:
+                    modif = "<"
+                elif c > pc:
+                    modif = ">"
+                else:
+                    modif = "-"
+                c = "%0.2f" % c
+                pc = "%0.2f" % pc
+                print("$" + str(tickers[refresh_outer][refresh_inner]) + ": " + str(pc) + "==>" + str(c))
+                print("-" * 50)
+                strs[refresh_outer] = (strs[refresh_outer][0:begin] + modif +
+                        str(tickers[refresh_outer][refresh_inner]) + " " + str(c))
+                refresh_inner += 1
+                if refresh_inner >= len(tickers[refresh_outer]):
+                    refresh_inner = 0
+                    refresh_outer = (refresh_outer + 1) % 3
+            except:
+                pass
+                
     elif colorMode == 6:
         FPS = 120
         count = 0
