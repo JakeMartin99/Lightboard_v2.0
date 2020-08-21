@@ -18,14 +18,15 @@ def rand_color()->(int,int,int):
 ring_rad = 1
 offs = 0
 def spiral(colors, ring_rad, offs):
+
     for R in range(ring_rad):
         point = Point2D()
         point.polar(r=R/20, a=R)
         x = point.x - 1 + 12
         y = 19 - (point.y - 1 + 10)
         if y % 2 == 1:
-            pass#x = 24 - x
-        pos = int(x + (25 * y))
+            x = 24 - x
+        pos = int(25*x + y)#int(x + (25 * y))
         if pos < 25*20 and pos >= 0:
             colors[pos] = colorsys.hsv_to_rgb( ((offs + R) % 256)/255, 255/255, 150/255)
             colors[pos] = (colors[pos][0]*255, colors[pos][1]*255, colors[pos][2]*255)
