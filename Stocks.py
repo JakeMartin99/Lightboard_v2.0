@@ -22,5 +22,6 @@ t = r['t'][-8:]
 print(t)'''
 
 def get_data(sym):
-    r = requests.get('https://finnhub.io/api/v1/quote?symbol=' + sym.upper() +'&token=bsvo45f48v6oe6a5u750')
+    r = requests.get('https://finnhub.io/api/v1/quote?symbol=' + sym.upper() +
+                    '&token=bsvo45f48v6oe6a5u750').json()
     return r['c'], r['pc']

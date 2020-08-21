@@ -9,6 +9,8 @@ import pygame
 import random
 from point2d import Point2D
 import colorsys
+from Stocks import get_data
+from Characters import char_pts
 
 # Function to create a randomized color tuple
 def rand_color()->(int,int,int):
@@ -64,6 +66,39 @@ def wow3(colors, off):
         colors[i] = (i % 256, (i+off) % 256, (i*off) % 256)
     return off+1
 
+# The stock scroller animation
+data = get_data("AAPL")
+count = 0
+def stock_scr(colors, data, count):
+    colors[0 + 0*25 : 24 + 0*25] = [WHITE]*25
+    colors[0 + 6*25 : 24 + 6*25] = [WHITE]*25
+    colors[0 + 12*25 : 24 + 12*25] = [WHITE]*25
+    colors[0 + 18*25 : 24 + 18*25] = [WHITE]*25
+
+    curr, prev_close = data
+    if curr < prev_close:
+        color = RED
+    else:
+        color = GREEN
+    strs = ["ABC DEF GHI JKL MNO PQR STU ",
+            "?? ?? ?? ?? ",
+            "VWX YZ0 123 456 789 <>? "]
+    for j in range(len(strs)):
+        str = strs[j]
+        L = len(str)
+        size = max(25, L*4)
+        chrs = [char_pts(str[i], (count + i*4)%(size), 1 + 6*j) for i in range(L)]
+        for chr in chrs:
+            for pixl in chr:
+                try:
+                    if pixl[0] >= size:
+                        pixl = (pixl[0] - size, pixl[1])
+                    if pixl[0] < 25:
+                        colors[pixl[0] + 25*pixl[1]] = color
+                except:
+                    pass
+    return (count+1)
+
 # Initialize the game engine
 pygame.init()
 
@@ -107,7 +142,7 @@ while not done:
             done = True
         # If a key is pressed change the colormode
         elif event.type == pygame.KEYDOWN:
-            colorMode = (colorMode + 1) % 5
+            colorMode = (colorMode + 1) % 7
             colors = [GRAY for i in range(25*20)]
 
     # Clear the screen and set the screen background
@@ -123,11 +158,18 @@ while not done:
         offset = wow3(colors, offset)
     elif colorMode == 4:
         ring_rad, offs = spiral(colors, ring_rad, offs)
+    elif colorMode == 5:
+        ring_rad, offs = 0, 0
+        count = stock_scr(colors, data, count)
+        FPS = 5
+    elif colorMode == 6:
+        FPS = 120
+        count = 0
 
-    # Perform the alternations
-    for y in range(20):
+    '''# Perform the alternations
+    for y in range(21):
         if y % 2 == 1:
-            colors = colors[0:25*y] + colors[25*y:25*(y+1)][::-1] + colors[25*(y+1):]
+            colors = colors[0:25*y] + colors[25*y:25*(y+1)][::-1] + colors[25*(y+1):]'''
     # Iterates over each of the board pixels to display it
     for y in range(20):
         for x in range(25):
@@ -136,6 +178,8 @@ while not done:
 #===============================================================================
     # Put updated pixels on the screen
     pygame.display.flip()
+    if colorMode == 5:
+        colors = [GRAY for i in range(25*20)]
 
     # Limit loop to FPS frames per second
     clock.tick(FPS)
