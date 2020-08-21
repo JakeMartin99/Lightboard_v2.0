@@ -196,7 +196,7 @@ while not done:
         ring_rad, offs = 0, 0
         count = stock_scr(colors, strs, count)
         FPS = 5
-        if count % 50 == 49:
+        if count % 25 == 24:
             try:
                 begin = strs[refresh_outer].index(tickers[refresh_outer][refresh_inner])-1
                 end = strs[refresh_outer][begin:].index("  ")
@@ -222,7 +222,7 @@ while not done:
                     refresh_outer = (refresh_outer + 1) % 3
             except:
                 pass
-                
+
     elif colorMode == 6:
         FPS = 120
         count = 0
