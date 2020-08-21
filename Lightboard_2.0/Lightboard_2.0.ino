@@ -1,10 +1,10 @@
 // Interactive LED Panel Project
-// Jake Martin, Eric Heising, & Will Foerster
+// Jake Martin & Eric Heising
 // https://dl.espressif.com/dl/package_esp32_index.json, http://arduino.esp8266.com/stable/package_esp8266com_index.json in preferences=>board manager URLs
 // Libraries: esp32, Coordinates, FastLED, Sparkfun Ambient Light Sensor Arduino
 // Board: ESP32 Dev Module
 
-// This sketch uses parts of libraries and example code from online documentation. 
+// This sketch uses parts of libraries and example code from online documentation.
 #include <FastLED.h>
 #include <Wire.h>
 #include <Coordinates.h>
@@ -51,7 +51,7 @@ void setup() {
   // put your setup code here, to run once:
   delay(3000); // 3 second delay for recovery
   Wire.begin();
-  
+
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 
@@ -61,7 +61,7 @@ void setup() {
   pinMode(BUTTON_PIN, INPUT);
   pinMode(MICROPHONE, INPUT);
   Serial.begin(9600);
-  
+
   light.begin();
   light.setGain(gain);
   light.setIntegTime(Time);
@@ -73,9 +73,9 @@ void setup() {
 void loop()
 {
   // send the 'leds' array out to the actual LED strip
-  FastLED.show();  
+  FastLED.show();
   // insert a delay to keep the framerate modest
-  FastLED.delay(1000/FRAMES_PER_SECOND); 
+  FastLED.delay(1000/FRAMES_PER_SECOND);
 
   luxVal = light.readLight();
   int temp = int(luxVal);
@@ -92,7 +92,7 @@ void loop()
   EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
 
   byte buttonState = digitalRead(BUTTON_PIN);
-  
+
   if( (prevButtonState == LOW) && (buttonState == HIGH) )
   {
     nextMode();
@@ -151,15 +151,15 @@ void loop()
               break;
            case 12:
               bpm7();
-              break;   
+              break;
         }
         break;
-      
+
     case 1:
         FRAMES_PER_SECOND = 40;
         volume = analogRead(MICROPHONE);       //Record the volume level from the sound detector
         avgVol = (avgVol + volume) / 2.0;     //Take our "average" of volumes.
-      
+
         //  Also if the volume is less than average volume / 2 (essentially an average with 0), it's considered silent.
         if (volume < avgVol / 2.0 || volume < 15) volume = 0;
         //If the current volume is larger than the loudest value recorded, overwrite
@@ -168,7 +168,7 @@ void loop()
         if (gradient > 1529) {
           gradient %= 1530;
           //Everytime a palette gets completed is a good time to readjust "maxVol," just in case
-          //  the song gets quieter; we also don't want to lose brightness intensity permanently 
+          //  the song gets quieter; we also don't want to lose brightness intensity permanently
           //  because of one stray loud sound.
           maxVol = (maxVol + volume) / 2.0;
         }
@@ -179,9 +179,9 @@ void loop()
 
         sound1();
         gradient++;
-        
+
         last = volume; //Records current volume for next pass
-        
+
         break;
 
     case 2:
@@ -189,7 +189,7 @@ void loop()
         // put your main code here, to run repeatedly:
         volume = analogRead(MICROPHONE);       //Record the volume level from the sound detector
         avgVol = (avgVol + volume) / 2.0;     //Take our "average" of volumes.
-      
+
         //  Also if the volume is less than average volume / 2 (essentially an average with 0), it's considered silent.
         if (volume < avgVol / 2.0 || volume < 15) volume = 0;
         //If the current volume is larger than the loudest value recorded, overwrite
@@ -198,7 +198,7 @@ void loop()
         if (gradient > 1529) {
           gradient %= 1530;
           //Everytime a palette gets completed is a good time to readjust "maxVol," just in case
-          //  the song gets quieter; we also don't want to lose brightness intensity permanently 
+          //  the song gets quieter; we also don't want to lose brightness intensity permanently
           //  because of one stray loud sound.
           maxVol = (maxVol + volume) / 2.0;
         }
@@ -209,11 +209,11 @@ void loop()
 
         sound2();
         gradient++;
-        
+
         last = volume; //Records current volume for next pass
-        
+
         break;
-        
+
     case 3:
         off();
         break;
@@ -291,20 +291,20 @@ void fade(float damper)
 {
     //"damper" must be between 0 and 1, or else you'll end up brightening the lights or doing nothing.
     if (damper >= 1) damper = 0.99;
-  
+
     for (int i = 0; i < NUM_LEDS; i++) {
-  
+
       //Retrieve the color at the current position.
       CRGB col = (leds[i]) ? leds[i] : CRGB(0, 0, 0);
-  
+
       //If it's black, you can't fade that any further.
       if (col == CRGB(0, 0, 0)) continue;
-  
+
       float colors[3]; //Array of the three RGB values
-  
+
       //Multiply each value by "damper"
       for (int j = 0; j < 3; j++) colors[j] = split(col, j) * damper;
-  
+
       //Set the dampened colors back to their spot.
       leds[i] = CRGB(colors[0] , colors[1], colors[2]);
     }
@@ -371,7 +371,7 @@ void spiral()
   }
   ring_rad++;
   fadeToBlackBy( leds, NUM_LEDS, 25);
-  
+
 }
 
 int buff_outer[][2] = { {25, 7}, {25, 8}, {25, 9}, {25, 10}, {25, 11}, {24, 12}, {24, 13}, {23, 13}, {23, 14}, {22, 15}, {21, 16}, {20, 16}, {19, 16}, {18, 16}, {17, 17}, {16, 18}, {15, 19}, {14, 19}, {13, 19}, {12, 19}, {12, 18}, {12, 17}, {11, 17},
@@ -379,7 +379,7 @@ int buff_outer[][2] = { {25, 7}, {25, 8}, {25, 9}, {25, 10}, {25, 11}, {24, 12},
                           {5, 6}, {6, 5}, {7, 5}, {8, 4}, {9, 3}, {10, 2}, {11, 2}, {12, 1}, {13, 1}, {14, 1}, {15, 1}, {16, 1}, {17, 2}, {18, 2}, {19, 3}, {20, 4}, {21, 4}, {22, 5}, {23, 5}, {24, 6}, {24, 7} };
 int buff_C[][2] = { {14, 6}, {14, 5}, {13, 5}, {13, 6}, {12, 6}, {12, 5}, {11, 5}, {11, 6}, {10, 6}, {10, 5}, {9, 5}, {9, 6}, {8, 6}, {9, 7}, {8, 7}, {9, 8}, {8, 8}, {9, 9}, {8, 9}, {9, 10}, {8, 10}, {9, 11}, {8, 11}, {9, 12}, {10, 12},
                           {10, 11}, {11, 11}, {11, 12}, {12, 12}, {12, 11}, {13, 11}, {13, 12}, {14, 12}, {14, 11} };
-int buff_U[][2] = { {11, 8}, {12, 8}, {11, 9}, {12, 9}, {11, 10}, {12, 10}, {11, 13}, {12, 13}, {11, 14}, {12, 14}, {12, 15}, {13, 14}, {13, 15}, {14, 15}, {14, 14}, {15, 14}, {15, 15}, {16, 15}, {16, 14}, {17, 14}, {16, 13}, {17, 13}, {16, 12}, {17, 12}, 
+int buff_U[][2] = { {11, 8}, {12, 8}, {11, 9}, {12, 9}, {11, 10}, {12, 10}, {11, 13}, {12, 13}, {11, 14}, {12, 14}, {12, 15}, {13, 14}, {13, 15}, {14, 15}, {14, 14}, {15, 14}, {15, 15}, {16, 15}, {16, 14}, {17, 14}, {16, 13}, {17, 13}, {16, 12}, {17, 12},
                           {16, 11}, {17, 11}, {16, 10}, {17, 10}, {16, 9}, {17, 9}, {16, 8}, {17, 8} };
 int buff_horn[][2] = { {20, 11}, {21, 11}, {20, 10}, {21, 10}, {21, 9}, {22, 8} };
 CRGB buff_col = CRGB(180, 180, 25);
@@ -391,7 +391,7 @@ void buffonecard()
   {
     leds[i] = CRGB(10, 10, 10);
   }
-  
+
   //Buff outline
   int col = col_start;
   for(int i=0; i<70; i++)
@@ -454,7 +454,7 @@ void buff2()
   {
     leds[i] = CRGB(10, 10, 10);
   }
-  
+
   //Buff outline
   int col = col_start;
   for(int i=0; i<70; i++)
@@ -517,7 +517,7 @@ void buff2_muted()
   {
     leds[i] = CRGB(10, 10, 10);
   }
-  
+
   //Buff outline
   int col = col_start;
   for(int i=0; i<70; i++)
@@ -577,7 +577,7 @@ void buff3()
 {
   //Buff background
   bpm6();
-  
+
   //Buff outline
   for(int i=0; i<70; i++)
   {
@@ -666,27 +666,27 @@ void wow3()
   offset++;
 }
 
-void rainbow() 
+void rainbow()
 {
   // FastLED's built-in rainbow generator
   fill_rainbow( leds, NUM_LEDS, gHue, 7);
 }
 
-void rainbowWithGlitter() 
+void rainbowWithGlitter()
 {
   // built-in FastLED rainbow, plus some random sparkly glitter
   rainbow();
   addGlitter(80);
 }
 
-void addGlitter( fract8 chanceOfGlitter) 
+void addGlitter( fract8 chanceOfGlitter)
 {
   if( random8() < chanceOfGlitter) {
     leds[ random16(NUM_LEDS) ] += CRGB::White;
   }
 }
 
-void confetti() 
+void confetti()
 {
   // random colored speckles that blink in and fade smoothly
   fadeToBlackBy( leds, NUM_LEDS, 10);
