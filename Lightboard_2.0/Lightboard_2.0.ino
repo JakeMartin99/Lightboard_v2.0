@@ -4,7 +4,7 @@
 // Libraries: esp32, Coordinates, FastLED, Sparkfun Ambient Light Sensor Arduino
 // Board: ESP32 Dev Module
 
-// This sketch uses parts of libraries and example code from online documentation.
+// This sketch uses these libraries and utilized example code from their online documentation.
 #include <FastLED.h>
 #include <Wire.h>
 #include <Coordinates.h>
@@ -111,7 +111,7 @@ void loop()
         EVERY_N_SECONDS( 30 )
         {
           colorMode++;
-          if( colorMode > 1 ) // Normally 12
+          if( colorMode > 12 ) // Normally 12
           {
             colorMode = 0;
           }
@@ -119,13 +119,13 @@ void loop()
         switch(colorMode)
         {
            case 0:
-              spiral();
-              break;
-           case 1:
               buff2();
               break;
+           case 1:
+              spiral();
+              break;
            case 2:
-              buff3();
+              wow2();//buff3();
               break;
            case 3:
               confetti();
@@ -387,6 +387,7 @@ int buff_C[][2] = { {14, 6}, {14, 5}, {13, 5}, {13, 6}, {12, 6}, {12, 5}, {11, 5
 int buff_U[][2] = { {11, 8}, {12, 8}, {11, 9}, {12, 9}, {11, 10}, {12, 10}, {11, 13}, {12, 13}, {11, 14}, {12, 14}, {12, 15}, {13, 14}, {13, 15}, {14, 15}, {14, 14}, {15, 14}, {15, 15}, {16, 15}, {16, 14}, {17, 14}, {16, 13}, {17, 13}, {16, 12}, {17, 12},
                           {16, 11}, {17, 11}, {16, 10}, {17, 10}, {16, 9}, {17, 9}, {16, 8}, {17, 8} };
 int buff_horn[][2] = { {20, 11}, {21, 11}, {20, 10}, {21, 10}, {21, 9}, {22, 8} };
+
 CRGB buff_col = CRGB(180, 180, 25);
 int col_start = 0;
 void buffonecard()
@@ -470,42 +471,21 @@ void buff2()
   //Buff C
   for(int i=0; i<34; i++)
   {
-    int x = buff_C[i][0] - 1;
-    int y = 19 - (buff_C[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CHSV( (col + (i*256/34)) % 256, 255, 255);
+    leds[pt_finder(buff.C[i][0], buff.C[i][1], 1)] = CHSV( (col + (i*256/34)) % 256, 255, 255);
   }
+  
   //Buff U
   for(int i=0; i<32; i++)
   {
-    int x = buff_U[i][0] - 1;
-    int y = 19 - (buff_U[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CHSV( (col + (i*256/32)) % 256, 255, 255);
+    leds[pt_finder(buff.U[i][0], buff.U[i][1], 1)] = CHSV( (col + (i*256/32)) % 256, 255, 255);
   }
+  
   //Buff horn
   for(int i=0; i<6; i++)
   {
-    int x = buff_horn[i][0] - 1;
-    int y = 19 - (buff_horn[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CHSV( (col + (i*256/34)) % 256, 255, 255);
+    leds[pt_finder(buff.horn[i][0], buff.horn[i][1], 1)] = CHSV( (col + (i*256/34)) % 256, 255, 255);
   }
+  
   col_start += 10;
 }
 void buff2_muted()

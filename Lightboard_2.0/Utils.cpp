@@ -1,5 +1,6 @@
 #include "Utils.h"
 
+// Alternate row direction to accomodate lightstrip winding, vertical flip and adjust upperleft corner if needed
 int pt_finder(int x, int y, int cornershift)
 {
   x -= cornershift;
