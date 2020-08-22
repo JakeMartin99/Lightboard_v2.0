@@ -379,15 +379,6 @@ void spiral()
 
 }
 
-int buff_outer[][2] = { {25, 7}, {25, 8}, {25, 9}, {25, 10}, {25, 11}, {24, 12}, {24, 13}, {23, 13}, {23, 14}, {22, 15}, {21, 16}, {20, 16}, {19, 16}, {18, 16}, {17, 17}, {16, 18}, {15, 19}, {14, 19}, {13, 19}, {12, 19}, {12, 18}, {12, 17}, {11, 17},
-                          {10, 16}, {9, 16}, {8, 16}, {7, 16}, {6, 16}, {6, 15}, {5, 15}, {5, 16}, {5, 17}, {5, 18}, {4, 19}, {3, 20}, {2, 20}, {2, 19}, {1, 18}, {1, 17}, {1, 16}, {2, 15}, {2, 14}, {2, 13}, {2, 12}, {3, 11}, {3, 10}, {3, 9}, {3, 8}, {4, 7},
-                          {5, 6}, {6, 5}, {7, 5}, {8, 4}, {9, 3}, {10, 2}, {11, 2}, {12, 1}, {13, 1}, {14, 1}, {15, 1}, {16, 1}, {17, 2}, {18, 2}, {19, 3}, {20, 4}, {21, 4}, {22, 5}, {23, 5}, {24, 6}, {24, 7} };
-int buff_C[][2] = { {14, 6}, {14, 5}, {13, 5}, {13, 6}, {12, 6}, {12, 5}, {11, 5}, {11, 6}, {10, 6}, {10, 5}, {9, 5}, {9, 6}, {8, 6}, {9, 7}, {8, 7}, {9, 8}, {8, 8}, {9, 9}, {8, 9}, {9, 10}, {8, 10}, {9, 11}, {8, 11}, {9, 12}, {10, 12},
-                          {10, 11}, {11, 11}, {11, 12}, {12, 12}, {12, 11}, {13, 11}, {13, 12}, {14, 12}, {14, 11} };
-int buff_U[][2] = { {11, 8}, {12, 8}, {11, 9}, {12, 9}, {11, 10}, {12, 10}, {11, 13}, {12, 13}, {11, 14}, {12, 14}, {12, 15}, {13, 14}, {13, 15}, {14, 15}, {14, 14}, {15, 14}, {15, 15}, {16, 15}, {16, 14}, {17, 14}, {16, 13}, {17, 13}, {16, 12}, {17, 12},
-                          {16, 11}, {17, 11}, {16, 10}, {17, 10}, {16, 9}, {17, 9}, {16, 8}, {17, 8} };
-int buff_horn[][2] = { {20, 11}, {21, 11}, {20, 10}, {21, 10}, {21, 9}, {22, 8} };
-
 CRGB buff_col = CRGB(180, 180, 25);
 int col_start = 0;
 void buffonecard()
@@ -402,54 +393,25 @@ void buffonecard()
   int col = col_start;
   for(int i=0; i<70; i++)
   {
-    int x = buff_outer[i][0] - 1;
-    int y = 19 - (buff_outer[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = buff_col;
+    leds[pt_finder(buff.outer[i][0], buff.outer[i][1], 1)] = buff_col;
   }
+  
   //Buff C
   for(int i=0; i<34; i++)
   {
-    int x = buff_C[i][0] - 1;
-    int y = 19 - (buff_C[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = buff_col;
+    leds[pt_finder(buff.C[i][0], buff.C[i][1], 1)] = buff_col;
   }
+  
   //Buff U
   for(int i=0; i<32; i++)
   {
-    int x = buff_U[i][0] - 1;
-    int y = 19 - (buff_U[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = buff_col;
+    leds[pt_finder(buff.U[i][0], buff.U[i][1], 1)] = buff_col;
   }
+  
   //Buff horn
   for(int i=0; i<6; i++)
   {
-    int x = buff_horn[i][0] - 1;
-    int y = 19 - (buff_horn[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = buff_col;
+    leds[pt_finder(buff.horn[i][0], buff.horn[i][1], 1)] = buff_col;
   }
   col_start += 10;
 }
@@ -500,55 +462,27 @@ void buff2_muted()
   int col = col_start;
   for(int i=0; i<70; i++)
   {
-    int x = buff_outer[i][0] - 1;
-    int y = 19 - (buff_outer[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CHSV( (col + (i*256/70)) % 256, 150, 255);
+    leds[pt_finder(buff.outer[i][0], buff.outer[i][1], 1)] = CHSV( (col + (i*256/70)) % 256, 150, 255);
   }
+  
   //Buff C
   for(int i=0; i<34; i++)
   {
-    int x = buff_C[i][0] - 1;
-    int y = 19 - (buff_C[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CHSV( (col + (i*256/34)) % 256, 150, 255);
+    leds[pt_finder(buff.C[i][0], buff.C[i][1], 1)] = CHSV( (col + (i*256/34)) % 256, 150, 255);
   }
+  
   //Buff U
   for(int i=0; i<32; i++)
   {
-    int x = buff_U[i][0] - 1;
-    int y = 19 - (buff_U[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CHSV( (col + (i*256/32)) % 256, 150, 255);
+    leds[pt_finder(buff.U[i][0], buff.U[i][1], 1)] = CHSV( (col + (i*256/32)) % 256, 150, 255);
   }
+  
   //Buff horn
   for(int i=0; i<6; i++)
   {
-    int x = buff_horn[i][0] - 1;
-    int y = 19 - (buff_horn[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CHSV( (col + (i*256/34)) % 256, 150, 255);
+    leds[pt_finder(buff.horn[i][0], buff.horn[i][1], 1)] = CHSV( (col + (i*256/34)) % 256, 150, 255);
   }
+  
   col_start += 10;
 }
 void buff3()
@@ -559,54 +493,25 @@ void buff3()
   //Buff outline
   for(int i=0; i<70; i++)
   {
-    int x = buff_outer[i][0] - 1;
-    int y = 19 - (buff_outer[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CRGB(255, 255, 255);
+    leds[pt_finder(buff.outer[i][0], buff.outer[i][1], 1)] = CRGB(255, 255, 255);
   }
+  
   //Buff C
   for(int i=0; i<34; i++)
   {
-    int x = buff_C[i][0] - 1;
-    int y = 19 - (buff_C[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CRGB(255, 255, 255);
+    leds[pt_finder(buff.C[i][0], buff.C[i][1], 1)] = CRGB(255, 255, 255);
   }
+  
   //Buff U
   for(int i=0; i<32; i++)
   {
-    int x = buff_U[i][0] - 1;
-    int y = 19 - (buff_U[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CRGB(255, 255, 255);
+    leds[pt_finder(buff.U[i][0], buff.U[i][1], 1)] = CRGB(255, 255, 255);
   }
+  
   //Buff horn
   for(int i=0; i<6; i++)
   {
-    int x = buff_horn[i][0] - 1;
-    int y = 19 - (buff_horn[i][1] - 1);
-
-    if(y%2 == 1)
-    {
-      x = 24-x;
-    }
-
-    leds[x + (25*y)] = CRGB(255, 255, 255);
+    leds[pt_finder(buff.horn[i][0], buff.horn[i][1], 1)] = CRGB(255, 255, 255);
   }
 }
 
