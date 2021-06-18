@@ -1,6 +1,7 @@
 import pygame
 from Utils import *
 from Shapes import *
+from Characters import char_pts
 from point2d import Point2D
 
 def CHSV(h,s,v):
@@ -16,11 +17,10 @@ class Modes:
     def __init__(self):
         self.buff = Buffalo()
         self.buff_col = (180, 180, 25)
-        self.col_start = 0
         self.ring_rad = 1
         self.offs = 0
 
-    def spiral(self, leds, col_start):
+    def spiral(self, leds):
         colors = leds
         for R in range(self.ring_rad):
             point = Point2D(r=R/20, a=R)
@@ -34,7 +34,7 @@ class Modes:
         if self.ring_rad > 20*12: self.ring_rad = 1
         return fadeToBlackBy(colors, 25)
 
-    def buffonecard(self, leds, col_start):
+    def buffonecard(self, leds):
         colors = leds
         for i in range(70):
             colors[pt_finder(self.buff.outer[i][0], self.buff.outer[i][1], 1)] = self.buff_col
@@ -46,29 +46,29 @@ class Modes:
             colors[pt_finder(self.buff.horn[i][0], self.buff.horn[i][1], 1)] = self.buff_col
         return colors
 
-    def buff2(self, leds, col_start):
+    def buff2(self, leds):
         colors = leds
-        col = col_start
         for i in range(70):
-            colors[pt_finder(self.buff.outer[i][0], self.buff.outer[i][1], 1)] = CHSV( (col + (i*256//70)) % 256, 255, 255)
+            colors[pt_finder(self.buff.outer[i][0], self.buff.outer[i][1], 1)] = CHSV( (self.offs+ (i*256//70)) % 256, 255, 255)
         for i in range(34):
-            colors[pt_finder(self.buff.C[i][0], self.buff.C[i][1], 1)] = CHSV( (col + (i*256//34)) % 256, 255, 255)
+            colors[pt_finder(self.buff.C[i][0], self.buff.C[i][1], 1)] = CHSV( (self.offs+ (i*256//34)) % 256, 255, 255)
         for i in range(32):
-            colors[pt_finder(self.buff.U[i][0], self.buff.U[i][1], 1)] = CHSV( (col + (i*256//32)) % 256, 255, 255)
+            colors[pt_finder(self.buff.U[i][0], self.buff.U[i][1], 1)] = CHSV( (self.offs+ (i*256//32)) % 256, 255, 255)
         for i in range(6):
-            colors[pt_finder(self.buff.horn[i][0], self.buff.horn[i][1], 1)] = CHSV( (col + (i*256//6)) % 256, 255, 255)
+            colors[pt_finder(self.buff.horn[i][0], self.buff.horn[i][1], 1)] = CHSV( (self.offs+ (i*256//6)) % 256, 255, 255)
+        self.offs += 10
         return colors
 
-    def fun(self, leds, col_start):
+    def fun(self, leds):
         colors = leds
-        col = -col_start
         for y in range(20):
             for x in range(25):
                 r = round(((x-12)**2 + (y-10)**2)**0.5)
-                colors[pt_finder(x, y, 0)] = CHSV((col + 15*r) % 256, 255, 255 - 10*r)
+                colors[pt_finder(x, y, 0)] = CHSV((self.offs+ 15*r) % 256, 255, 255 - 10*r)
+        self.offs += 10
         return colors
 
-    def line(self, leds, col_start, p0, p1):
+    def line(self, leds, p0, p1):
         colors = leds
         x0, y0 = p0
         x1, y1 = p1
@@ -89,5 +89,21 @@ class Modes:
             for x in range(25):
                 dif = abs(y - (m*x + b)) if mode == "norm" else (abs(x - (m*y + b)) if mode == "inv" else (1 if (x,y) == (x1,y1) else 0))
                 if dif < 1 and (x0 <= x <= x1 or x0 >= x >= x1) and (y0 <= y <= y1 or y0 >= y >= y1):
-                    colors[pt_finder(x,y,0)] = CHSV(0,0,255*(1-dif))
+                    colors[pt_finder(x,y,1)] = CHSV(0,0,255*(1-dif))
+        return colors
+
+    def text(self, leds, str, color):
+        colors = [(0,0,0) for c in leds]
+        size = max(25, len(str)*4)
+        for i in range(len(str)):
+            chars = [char_pts(str[i], (self.offs + i*4)%(size), 1)]
+            for char in chars:
+                for pixl in char[1:]:
+                    try:
+                        if pixl[0] >= size:
+                            pixl = (pixl[0] - size, pixl[1])
+                        if pixl[0] < 25:
+                            colors[pt_finder(pixl[0],pixl[1],0)] = color
+                    except:
+                        pass
         return colors
