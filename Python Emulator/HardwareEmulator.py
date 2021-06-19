@@ -7,8 +7,8 @@ def color_adjust(color):
 
 # A class that implements an emulation of the hardware 25x20 lightboard
 class Lightboard:
-    # Lightboard constructor, with optional fps parameter
-    def __init__(self, fps=30):
+    # Lightboard constructor, with num_modes parameter
+    def __init__(self, num_modes):
         # Initialize the pygame engine
         pygame.init()
         # Set the font with (size, bold, italics)
@@ -20,10 +20,13 @@ class Lightboard:
         self.background = pygame.image.load("wood.jpg")
         pygame.display.set_caption("Board Tester v2")
         # Set the FPS rate
-        self.FPS = fps
+        self.FPS = 30
         # Set looping variables
         self.done = False
         self.clock = pygame.time.Clock()
+        # Set mode control variables
+        self.mode = 0
+        self.num_modes = num_modes
         # Set debugging toggle variable
         self.disp_nums = False
 
@@ -54,6 +57,10 @@ class Lightboard:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.disp_nums = not self.disp_nums
+                elif event.key == pygame.K_LEFT:
+                    self.mode = abs((self.mode-1) % self.num_modes)
+                elif event.key == pygame.K_RIGHT:
+                    self.mode = (self.mode+1) % self.num_modes
 
     def turn_off(self):
         pygame.quit()

@@ -28,14 +28,14 @@ class Modes:
             y = round(point.y + 10)
             pos = pt_finder(x,y,1)
             if pos < 25*20 and pos >= 0:
-              colors[pos] = CHSV( (offs + R) % 256, 255, 150)
+              colors[pos] = CHSV( (self.offs + R) % 256, 255, 150)
               self.offs += 1
         self.ring_rad += 1
         if self.ring_rad > 20*12: self.ring_rad = 1
         return fadeToBlackBy(colors, 25)
 
     def buffonecard(self, leds):
-        colors = leds
+        colors = [(0,0,0) for c in leds]
         for i in range(70):
             colors[pt_finder(self.buff.outer[i][0], self.buff.outer[i][1], 1)] = self.buff_col
         for i in range(34):
@@ -47,7 +47,7 @@ class Modes:
         return colors
 
     def buff2(self, leds):
-        colors = leds
+        colors = [(0,0,0) for c in leds]
         for i in range(70):
             colors[pt_finder(self.buff.outer[i][0], self.buff.outer[i][1], 1)] = CHSV( (self.offs+ (i*256//70)) % 256, 255, 255)
         for i in range(34):
@@ -60,7 +60,7 @@ class Modes:
         return colors
 
     def fun(self, leds):
-        colors = leds
+        colors = [(0,0,0) for c in leds]
         for y in range(20):
             for x in range(25):
                 r = round(((x-12)**2 + (y-10)**2)**0.5)
