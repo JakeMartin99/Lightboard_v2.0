@@ -14,7 +14,7 @@ class Lightboard:
         # Set the font with (size, bold, italics)
         self.font = pygame.font.SysFont('Calibri', 12, True, False)
         # Set the height and width of the screen to accomodate 25x20=500 lightboard pixels of
-        # diameter 30px with 5px margin on all sides
+        # diameter 30px with 5px margin on all sides, and 80x70 for the wood frame
         self.size = ((30+5)*25+5+80, (30+5)*20+5+70)
         self.screen = pygame.display.set_mode(self.size)
         self.background = pygame.image.load("wood.jpg")
