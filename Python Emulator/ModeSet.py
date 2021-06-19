@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from Utils import *
 from Shapes import *
 from Characters import char_pts
@@ -66,6 +66,21 @@ class Modes:
                 r = round(((x-12)**2 + (y-10)**2)**0.5)
                 colors[pt_finder(x, y, 0)] = CHSV((self.offs+ 15*r) % 256, 255, 255 - 10*r)
         self.offs += 10
+        return colors
+
+    def wow(self, leds):
+        return [(random.randint(0,255), random.randint(0,255), random.randint(0,255)) for c in leds]
+
+    def wow_hype(self, leds):
+        return [CHSV(random.randint(0,255), 255, 255) for c in leds]
+
+    def wow2(self, leds):
+        color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+        return [color for c in leds]
+
+    def wow3(self, leds):
+        colors = [(i%255, (i+self.offs)%255, (i*self.offs)%255) for i in range(len(leds))]
+        self.offs += 1
         return colors
 
     def line(self, leds, p0, p1):
