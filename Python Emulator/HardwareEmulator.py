@@ -18,7 +18,7 @@ class Lightboard:
         self.size = ((30+5)*25+5+80, (30+5)*20+5+70)
         self.screen = pygame.display.set_mode(self.size)
         self.background = pygame.image.load("wood.jpg")
-        pygame.display.set_caption("Board Tester v2")
+        pygame.display.set_caption("Lightboard Emulator")
         # Set the FPS rate
         self.FPS = 30
         # Set looping variables

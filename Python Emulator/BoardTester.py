@@ -12,7 +12,7 @@ from ModeSet import Modes
 modes = Modes()
 
 # Create a object for the hardware emulation
-board = Lightboard(8)
+board = Lightboard(9)
 # Initialize the 500px (R,G,B) color array
 leds = [(0,0,0) for c in range(500)]
 
@@ -37,6 +37,8 @@ while not board.done:
         leds = modes.wow2(leds)
     elif board.mode == 7:
         leds = modes.wow3(leds)
+    elif board.mode == 8:
+        leds = modes.strobe(leds)
     # Display the pixel array to the emulated board
     board.display(leds)
 

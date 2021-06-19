@@ -19,6 +19,7 @@ class Modes:
         self.buff_col = (180, 180, 25)
         self.ring_rad = 1
         self.offs = 0
+        self.bin = False
 
     def spiral(self, leds):
         colors = leds
@@ -82,6 +83,11 @@ class Modes:
         colors = [(i%255, (i+self.offs)%255, (i*self.offs)%255) for i in range(len(leds))]
         self.offs += 1
         return colors
+
+    def strobe(self, leds):
+        color = (255,255,255) if self.bin else (0,0,0)
+        self.bin = not self.bin
+        return [color for c in leds]
 
     def line(self, leds, p0, p1):
         colors = leds
