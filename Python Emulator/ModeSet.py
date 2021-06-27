@@ -1,12 +1,19 @@
-import pygame, random
+import pygame, random, math
 from Utils import *
 from Shapes import *
 from Characters import char_pts
 from point2d import Point2D
 
+PI = math.pi
+TAU = 2*PI
+
 def CHSV(h,s,v):
     color = pygame.Color(0)
-    color.hsva = (h*360//255,s*100//255,v*100//255,100)
+    try:
+        color.hsva = (h*360//255,s*100//255,v*100//255,100)
+    except:
+        print((h*360//255,s*100//255,v*100//255,100))
+        exit()
     return (color.r, color.g, color.b)
 
 def fadeToBlackBy(colors, fade):
@@ -34,6 +41,20 @@ class Modes:
         self.ring_rad += 1
         if self.ring_rad > 20*12: self.ring_rad = 1
         return fadeToBlackBy(colors, 25)
+
+    def galaxy(self, leds, num_arms):
+        colors = leds
+        hue = random.randint(0,255)
+        for y in range(20):
+            for x in range(25):
+                point = Point2D(x - 12, y - 10)
+                r, theta = point.r, point.a
+                if theta < 0: theta = TAU + theta
+                val = (r-num_arms*theta-self.offs)%TAU
+                value = abs(round((val-PI)*256/PI))
+                colors[pt_finder(x,y,0)] = CHSV(hue, 255, value)
+        self.offs += 0.2
+        return colors
 
     def buffonecard(self, leds):
         colors = [(0,0,0) for c in leds]

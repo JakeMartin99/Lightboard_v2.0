@@ -4,6 +4,9 @@ New python code to test board graphics using pygame
 Updated 2021
 """
 
+# Import default Libraries
+import random
+
 # Import custom libraries
 from HardwareEmulator import Lightboard
 from ModeSet import Modes
@@ -12,7 +15,7 @@ from ModeSet import Modes
 modes = Modes()
 
 # Create a object for the hardware emulation
-board = Lightboard(9)
+board = Lightboard(10)
 # Initialize the 500px (R,G,B) color array
 leds = [(0,0,0) for c in range(500)]
 
@@ -24,20 +27,22 @@ while not board.done:
     if board.mode == 0:
         leds = modes.spiral(leds)
     elif board.mode == 1:
-        leds = modes.buffonecard(leds)
+        leds = modes.galaxy(leds, 3)
     elif board.mode == 2:
-        leds = modes.buff2(leds)
+        leds = modes.buffonecard(leds)
     elif board.mode == 3:
-        leds = modes.fun(leds)
+        leds = modes.buff2(leds)
     elif board.mode == 4:
-        leds = modes.wow(leds)
+        leds = modes.fun(leds)
     elif board.mode == 5:
-        leds = modes.wow_hype(leds)
+        leds = modes.wow(leds)
     elif board.mode == 6:
-        leds = modes.wow2(leds)
+        leds = modes.wow_hype(leds)
     elif board.mode == 7:
-        leds = modes.wow3(leds)
+        leds = modes.wow2(leds)
     elif board.mode == 8:
+        leds = modes.wow3(leds)
+    elif board.mode == 9:
         leds = modes.strobe(leds)
     # Display the pixel array to the emulated board
     board.display(leds)
