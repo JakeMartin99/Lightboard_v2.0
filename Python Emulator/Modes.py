@@ -1,3 +1,7 @@
+"""
+Jake Martin
+Updated 2021
+"""
 import random, math
 from typing import List, Tuple
 import FastLED; from FastLED import *
@@ -43,7 +47,7 @@ class Mode:
     Attributes
     ----------
     leds : list[tuple[int,int,int]]
-        1D list of (R, G, B) tuples representing values for each bulb on the light strip.
+        1D list of (R, G, B) tuples representing values for each pixel on the light strip.
 
     Methods
     -------
@@ -51,18 +55,19 @@ class Mode:
         Abstract function to handle opening the mode on the board.
     refresh():
         Abstract function to handle refreshing the frames of the mode.
+    close():
+        Closes the mode on the board by fading current pixels out.
     """
 
-    def __init__(self, leds:List[Tuple[int,int,int]]):
+    def __init__(self):
         """
-        Constructs the mode object with necessary parameters
+        Constructs the mode object with a leds list of given length.
 
         Parameters
         ----------
-        leds : list
-            1D list of (R, G, B) tuples representing each bulb on the light strip
+        None
         """
-        self.leds = leds
+        self.leds:List[Tuple[int,int,int]] = [(0,0,0)]*NUM_LEDS
 
     def open(self):
         """
@@ -78,6 +83,25 @@ class Mode:
         """
         pass
 
+    def close(self) -> bool:
+        """
+        Closes the mode on the board by fading current pixels out.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        _ : bool
+            Describes whether or not the closing process is still going
+        """
+        self.leds = FastLED.fadeToBlackBy(self.leds, 25)
+        if all([R+B+G<=45 for (R,G,B) in self.leds]):
+            self.leds = [(0,0,0)]*NUM_LEDS
+            return False
+        return True
+
 class Galaxy(Mode):
     """
     A subclass of Mode that implements the specific "Galaxy" mode.
@@ -88,7 +112,10 @@ class Galaxy(Mode):
     ----------
     leds : list[tuple[int,int,int]]
         1D list of (R, G, B) tuples representing values for each bulb on the light strip.
-
+    offset : float
+        Increments each refresh to adjust shape rotation
+    num_arms : int
+        Determines the number of arms in the galaxy shape displayed
 
     Methods
     -------
@@ -96,22 +123,23 @@ class Galaxy(Mode):
         Handles opening the Galaxy mode on the board.
     refresh():
         Refreshes the frames of the Galaxy mode.
+    close():
+        Parent function that closes the mode on the board.
     """
 
-    def __init__(self, leds:List[Tuple[int,int,int]]):
+    def __init__(self):
         """
-        Constructs the Galaxy mode object using the parent Mode constructor
+        Constructs the Galaxy mode object, utilizing the parent Mode constructor
 
         Parameters
         ----------
-        leds : list
-            1D list of (R, G, B) tuples representing each bulb on the light strip
+        None
         """
-        super().__init__(leds)
-        self.offset = None
-        self.num_arms = None
+        super().__init__()
+        self.offset:float = 0.0
+        self.num_arms:int = 0
 
-    def open(self, num_arms:int=random.randint(2,8)) -> None:
+    def open(self, num_arms:int=random.randint(0,8)) -> None:
         """
         Handles opening the Galaxy mode on the board.
         Sets num_arms based on the parameter and offset to 0.
@@ -126,7 +154,7 @@ class Galaxy(Mode):
         -------
         None
         """
-        self.offset = 0
+        self.offset = 0.0
         self.num_arms = num_arms
 
     def refresh(self) -> None:
@@ -154,6 +182,39 @@ class Galaxy(Mode):
                 self.leds[pt_finder(x,y,0)] = CHSV(hue, 255, value)
         self.offset += 0.2
 
+class Controller:
+    def __init__(self):
+        self.closing = False
+        self.module = 0
+        self.mode = 0
+        self.modes = [Galaxy(),Galaxy(),Galaxy(),Galaxy()]
+
+    def process_signals(self, module_button:bool, mode_button:bool, timer_signal:bool) -> None:
+        if module_button:
+            self.module = (self.mode+1) % 2
+            self.mode = 0
+            self.closing = True
+        elif (self.module == 0 and timer_signal) or (self.module == 1 and mode_button):
+            self.closing = True
+
+    def refresh_leds(self):
+        if self.closing:
+            self.closing = self.modes[self.mode].close()
+            if not self.closing:
+                if self.module == 0:
+                    current = self.mode
+                    while current == self.mode:
+                        self.mode = random.randint(0,len(self.modes)-1)
+                    self.modes[self.mode].open(self.mode)
+                elif self.module == 1:
+                    self.mode = (self.mode+1) % len(self.modes)
+                    self.modes[self.mode].open(self.mode)
+        else:
+            self.modes[self.mode].refresh()
+
+    def get_leds(self) -> List[Tuple[int,int,int]]:
+        return self.modes[self.mode].leds
+
 class Modes:
     def __init__(self, leds):
         self.buff = Buffalo()
@@ -161,7 +222,7 @@ class Modes:
         self.ring_rad = 1
         self.offs = 0
         self.bin = False
-        self.G = Galaxy(leds)
+        self.G = Galaxy(500)
         self.G.open()
 
     def off(self, leds):

@@ -1,3 +1,7 @@
+"""
+Jake Martin
+Updated 2021
+"""
 # Import the graphical library pygame
 import pygame
 
@@ -7,8 +11,8 @@ def color_adjust(color):
 
 # A class that implements an emulation of the hardware 25x20 lightboard
 class Lightboard:
-    # Lightboard constructor, with num_modes parameter
-    def __init__(self, num_modes):
+    # Lightboard constructor
+    def __init__(self):
         # Initialize the pygame engine
         pygame.init()
         # Set the font with (size, bold, italics)
@@ -19,14 +23,12 @@ class Lightboard:
         self.screen = pygame.display.set_mode(self.size)
         self.background = pygame.image.load("wood.jpg")
         pygame.display.set_caption("Lightboard Emulator")
-        # Set the FPS rate
+        # Set the FPS rate and frame counter
         self.FPS = 30
+        self.FCOUNT = 0
         # Set looping variables
         self.done = False
         self.clock = pygame.time.Clock()
-        # Set mode control variables
-        self.mode = 0
-        self.num_modes = num_modes
         # Set debugging toggle variable
         self.disp_nums = False
 
@@ -46,10 +48,12 @@ class Lightboard:
                 i+=1
         # Put updated pixels on the screen
         pygame.display.flip()
-        # Limit loop to FPS frames per second
+        # Limit loop to FPS frames per second and count the frame
         self.clock.tick(self.FPS)
+        self.FCOUNT += 1
 
     def handle_events(self):
+        right, up, timer = False, False, False
         for event in pygame.event.get():
             # If program is quit, end the looping
             if event.type == pygame.QUIT:
@@ -57,10 +61,15 @@ class Lightboard:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.disp_nums = not self.disp_nums
-                elif event.key == pygame.K_LEFT:
-                    self.mode = abs((self.mode-1) % self.num_modes)
+                elif event.key == pygame.K_UP:
+                    up = True
                 elif event.key == pygame.K_RIGHT:
-                    self.mode = (self.mode+1) % self.num_modes
+                    right = True
+        if self.FCOUNT >= self.FPS * 30:
+            timer = True
+            self.FCOUNT = 0
+
+        return (right, up, timer)
 
     def turn_off(self):
         pygame.quit()
